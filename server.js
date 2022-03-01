@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
   // root url, 즉 메인 페이지로 접속했을 때 papago의 메인 페이지가 나와야함.
   // pulic/ ~
 
-  res.sendFile(__dirname, 'index.html');ㅋㅋ.clientId
+  res.sendFile(__dirname, 'index.html');
 });
 
 // detectLangs 경로로 요청했을 때
@@ -90,7 +90,8 @@ app.get("/translate", (req, res) => {
 
   request.post(options, (error, response, body) => {
     if (!error && response.statusCode == 200) {
-      res.json(body); // front에 해당하는 script.js에 응답 데이터(json) 전송.
+      res.json(body); // front에 해당하는 script.js에 응답 데이터(json) 전송
+      // json() : stringify()가 적용된 메서드
     } else {
       console.log(`error = ${response.statusCode}`);
     }

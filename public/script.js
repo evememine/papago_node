@@ -40,7 +40,7 @@ sourceTextArea.addEventListener('input', (event) => {
             const url = '/detectLangs'; // node 서버의 특정 url주소
         
             xhr.onreadystatechange = () => {
-                if (xhr.readyState == 4 & xhr.status == 200) {
+                if (xhr.readyState == 4 && xhr.status == 200) {
         
                     // 서버의 응답 결과 확인(responseText : 응답에 포함된 텍스트)
                     // console.log(typeof xhr.responseText);
@@ -53,7 +53,13 @@ sourceTextArea.addEventListener('input', (event) => {
                     console.log(typeof parseJsonToObject, parseJsonToObject);
         
                     const result = parseJsonToObject['message']['result']; // ?
+                    const options = sourceSelect.options;
         
+                    for (let i = 0; i < options.length; i++) {
+                        if(options[i].value === result['srcLangType']) {
+                            sourceSelect.selectedIndex = i;
+                        }
+                    }
         
                     // 번역된 텍스트를 결과화면에 입력
                     targetTextArea.value = result['translatedText'];
@@ -62,20 +68,28 @@ sourceTextArea.addEventListener('input', (event) => {
                     // console.log(`응답 헤더 : ${xhr.getAllResponseHeaders()}`);
                 }
             };
+
+            /**
+             * 
+             * xhr.addEventListener('load', () => { // 로딩이 완료되었을 때 실행
+             *  if (xhr.status == 200) {
+             *  // 내부 코드는 동일.
+             * }
+             * });
+             */
         
             xhr.open("POST", url);
         
             // 서버에 보내는 요청 데이터의 형식이 json 형식임을 명시.
             xhr.setRequestHeader("Content-type", "application/json");
         
-            
             const requestData = { // typeof : object
                 text,
                 targetLanguage
             };
         
             // JSON(Javascript Object notation)의 타입은 ? string
-            // 내장모듈 JSON 활용. "['a','b','c']"
+            // 내장모듈 JSON 활용. "['a', 'b','c']"
             // 서버에 보낼 데이터를 문자열화 시킴.
             jsonToString = JSON.stringify(requestData);
             // console.log(typeof jsonToString); // type: string
@@ -87,69 +101,4 @@ sourceTextArea.addEventListener('input', (event) => {
             // alert('번역할 텍스트를 입력하셔야죠!');
         }
     }, 3000);
-});
-
-
-sourceTextArea.addEventListener('input', (event) => {
-    const text = event.target.value; //textArea에 입력한 값. 
-
-    // 이름이 XML일뿐이지, XML에 국한되지 않음.
-    const xhr = new XMLHttpRequest();
-
-    const url = '/detectLangs'; //node 서버의 특정 url주소
-
-    xhr.onreadystatechange = () => {
-        if (xhr.readyState == 4 & xhr.status == 200) {
-
-            // 서버의 응답 결과 확인(responseText : 응답에 포함된 텍스트)
-            // console.log(typeof xhr.responseText);
-            const responseData = xhr.responseText;
-            console.log(`responseData:${responseData}, type: ${typeof responseData}`);
-            const parseJsonToObject = JSON.parse(JSON.parse(responseData));
-            //두번 파싱해야 하는 이유
-            //https://stackoverflow.com/questions/30194562/json-parse-not-working/49460716
-
-           console.log(typeof parseJsonToObject, parseJsonToObject);
-            
-           const result = parseJsonToObject['message']['result'];
-           const options = sourceSelect.options;
-
-           for(let i= 0; i < options.length; i++ ){
-               if(options[i].value === result['srcLangType']) {
-                   sourceSelect.selectedIndex = i;
-               }
-           }
-          
-            targetTextArea.value = result['translatedText'];
-
-           //응답의 헤더(header) 확인
-            // console.log(`응답 헤더 : ${xhr.getAllResponseHeaders()}`);
-        };
-    };
-
-    /**
-     xhr.addEventListener('load',() => {//로딩이 완료되었을 때 실행
-    if (xhr.status == 200){
-        //내부  코드는 동일
-    }
-    });
-     */
-
-    xhr.open("POST", url);
-
-    xhr.setRequestHeader("Content-type", "application/json");
-
-    const requestData = { //typeof : object
-        text,
-        targetLanguage
-    };
-
-    //json(javascript Object notation)의 타입은? stirng -> 직렬화
-    //내장모듈 json활용
-    //서버에 보낼 데이터를  문자열화 시킴.
-    jsonToString = JSON.stringify(requestData);
-    console.log(typeof jsonToString);
-
-    //xhr : XHLHttpRequest
-    xhr.send(jsonToString);
 });
